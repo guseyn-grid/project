@@ -75,7 +75,7 @@ public class AsyncFacadeServiceImpl implements AsyncFacadeService {
         logger.info("output from m1: {}", m1);
         logger.info("output from m2: {}", m2);
 
-        Integer result = 2 * params.get(0) + 2 * params.get(1);
+        Integer result = 2 * m1 + 2 * m2;
 
         logger.info("total result is {}", result);
 
