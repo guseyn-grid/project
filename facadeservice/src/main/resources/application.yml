@@ -1,2 +1,10 @@
 server:
   port: 8080
+
+target-service:
+  host: "127.0.0.1"
+  port: 8081
+
+  api:
+    m1: "/m1"
+    m2: "/m2"

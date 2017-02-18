@@ -10,8 +10,4 @@ public class MethodUtils {
         return 2 * x + y;
     }
 
-    public static Integer m3(Integer m1, Integer m2) {
-        return 2 * m1 + 2 * m2;
-    }
-
 }

@@ -2,4 +2,4 @@ server:
   port: 8081
 
 process:
-  executeTime: 2500
+  executeTime: 2000

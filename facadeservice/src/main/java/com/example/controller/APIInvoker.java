@@ -1,53 +1,54 @@
 package com.example.controller;
 
-import com.example.helper.ServiceRequests;
+import com.example.service.AsyncFacadeService;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Executors;
+import org.springframework.web.context.request.async.DeferredResult;
 
 @RestController
 public class APIInvoker {
 
     private static final Logger logger = LoggerFactory.getLogger(APIInvoker.class);
-    private static final int THREAD_POOL = 2;
 
-    @RequestMapping(value = {"/result", "/result/"}, method = RequestMethod.GET)
-    public @ResponseBody
-    Integer getResult(
+    @Autowired
+    AsyncFacadeService asyncFacadeService;
+
+    @Autowired
+    ListeningExecutorService listeningExecutorService;
+
+    @RequestMapping(value = {"/result", "/result"}, method = RequestMethod.GET)
+    public @ResponseBody DeferredResult<Integer> getResult(
             @RequestParam(value = "x", required = true) Integer x,
-            @RequestParam(value = "y", required = true) Integer y) {
+            @RequestParam(value = "y", required = true) Integer y) throws Exception {
 
         logger.info("input params for getResult: x = {}, y = {}", x, y);
 
-        final String[] PATHS_M1_M2 = new String[]{"/m1", "/m2"};
-        final String PATH_M3 = "/m3";
+        DeferredResult<Integer> deferredResult = new DeferredResult<>();
 
-        Map<String, Integer> paramsForM1AndM2 = new HashMap<String, Integer>(){{
-            put("x", x);
-            put("y", y);
-        }};
+        ListenableFuture<Integer> future = asyncFacadeService.getResult(x, y);
 
-        Map<String, String> paramsForM3;
+        Futures.addCallback(future, new FutureCallback<Integer>() {
+            @Override
+            public void onSuccess(Integer result) {
+                logger.info("total output in callback: {}", result);
+                deferredResult.setResult(result);
+            }
 
-        ListeningExecutorService pool = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(THREAD_POOL));
+            @Override
+            public void onFailure(Throwable t) {
+                deferredResult.setErrorResult(t);
+            }
+        });
 
-        for (final String path : PATHS_M1_M2) {
-
-            final ListenableFuture<Integer> future = pool.submit(() -> ServiceRequests.baseRequest(path, paramsForM1AndM2));
-
-
-
-        }
-
-        return 0;
+        return deferredResult;
 
     }
+
 
 }
