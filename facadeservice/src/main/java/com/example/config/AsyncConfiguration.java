@@ -34,8 +34,7 @@ public class AsyncConfiguration {
 
     @Bean(destroyMethod="shutdown")
     public ListeningExecutorService listeningExecutorService() {
-        ThreadFactory threadFactory = new ThreadFactoryBuilder()
-                .setNameFormat(" Listening Executor Service [%d]").build();
+        ThreadFactory threadFactory = new ThreadFactoryBuilder().build();
         ExecutorService executorService = Executors.newScheduledThreadPool(
                 TASK_EXECUTOR_THREADS, threadFactory);
         return MoreExecutors.listeningDecorator(executorService);
