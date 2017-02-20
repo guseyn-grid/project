@@ -46,6 +46,8 @@ public class APIInvoker {
             }
         });
 
+        logger.info("non blocking message?");
+
         return deferredResult;
 
     }
